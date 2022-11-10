@@ -1,0 +1,196 @@
+\documentclass[letterpaper,11pt]{article} % Default font size
+
+\usepackage{geometry}
+\usepackage{lipsum}
+\usepackage{enumitem}
+\usepackage{etaremune}
+\usepackage{etoolbox} %% For \AtEndEnvironment
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{harvard}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{fontspec}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{color}
+\usepackage{multicol}
+\usepackage{relsize}
+\usepackage{graphicx}
+\usepackage{pdfpages}
+\usepackage{svg}
+\usepackage[absolute]{textpos}
+\usepackage{amsmath}
+
+% --- For placement of the horizontal line
+\usepackage{tikz}
+\usetikzlibrary{calc}
+
+% Reset column separator of table.
+\setlength{\tabcolsep}{1pt}
+
+% Suppress natural indentation.
+\setlength{\parindent}{0pt}
+
+% New default fonts.
+\defaultfontfeatures{Mapping=tex-text,Scale=MatchLowercase}
+\setmainfont[
+	Path=./fonts/,
+	BoldFont=DroidSerif-Bold.ttf,
+	UprightFont=DroidSerif.ttf,
+	BoldItalicFont=DroidSerif-BoldItalic.ttf,
+	ItalicFont=DroidSerif-Italic.ttf
+]{DroidSerif}
+
+% Suppress natural indentation of enumerate and itemize.
+\setlist[enumerate]{leftmargin=*} % Removes natural indent of "enumerate" environment.
+\setlist[itemize]{leftmargin=*}
+\setlist{nosep}
+
+% header
+\definecolor{Burnt Orange}{RGB}{191,87,0}
+\definecolor{Charcoal}{RGB}{51,63,72}
+\definecolor{headercolor}{RGB}{156, 173, 183}
+\definecolor{footercolor}{RGB}{156, 173, 183}
+
+% footer
+\renewcommand{\headrulewidth}{0pt}
+
+% hyper link to the publication
+
+%%--------------------------------------------------------------------%%
+%%          for reverse order enumeration with resume option            %%
+%%--------------------------------------------------------------------%%
+\makeatletter %% <- change @ so that it can be used in macro names
+%% Define the resume key for etaremune:
+\define@boolkey[EM]{etaremune}{resume}[true]{}
+\presetkeys[EM]{etaremune}{resume=false}{} %% <- false by default
+
+%% Increase starting value of previous etaremune environment if resuming
+\AtEndEnvironment{etaremune}{%
+	\ifEM@etaremune@resume
+	\EM@resumewrite{\csname EM@prevlist@\@roman{\@enumdepth}\endcsname}{\EM@currlist}%
+	\fi
+	\expandafter\xdef\csname EM@prevlist@\@roman{\@enumdepth}\endcsname{\EM@currlist}%
+}
+\newcommand*\EM@resumewrite[2]{% %% Expand arguments and then call EM@resume@write@
+	\begingroup
+	\edef\temp{\noexpand\EM@resumewrite@
+		{\expandafter\string\csname etaremune@#1\endcsname}%
+		{\expandafter\string\csname etaremune@#2\endcsname}}%
+	\temp
+	\endgroup
+}
+\newcommand*\EM@resumewrite@[2]{% %% Write to aux file
+	\immediate\write\@auxout{\xdef#1{\string\noexpand\string\the\numexpr#1+\string\noexpand#2 }}%
+}
+
+% to set the deafult color
+\newcommand{\globalcolor}[1]{%
+	\color{#1}\global\let\default@color\current@color
+}
+\makeatother %% <- change @ back
+%--------------------------------------------------------------------------------
+
+
+
+% Set default color to Charcoal.
+\AtBeginDocument{\globalcolor{Charcoal}}
+
+% cover letter
+\fancypagestyle{CL}{
+    \fancyhead{}
+	\newgeometry{margin=2cm,top=5.3cm}
+	\fancyhead[L]{%
+	    \begin{textblock*}{1.25in}(0.5in, 0.5in)
+	        \includesvg[width=1.25in]{figures/utexas_official_seal.svg}
+        \end{textblock*}
+        \begin{textblock*}{6.25in}(2.1in, 0.75in)
+            \large\textbf{The University of Texas at Austin} \\
+            \normalsize Department of Something Great
+        \end{textblock*}
+        \begin{textblock*}{6.25in}(2.1in, 1.2in)
+            \textit{\small ECJ 7.123\hspace{1ex}\textbullet\hspace{1ex}301 E. Dean Keeton St.\hspace{1ex}\textbullet\hspace{1ex}Austin, TX 78712\hspace{1ex}\textbullet\hspace{1ex}
+            512-123-4567\hspace{1ex}\textbullet\hspace{1ex}admin@utexas.edu}
+        \end{textblock*}
+        \begin{tikzpicture}[remember picture,overlay]
+        \draw[color=Burnt Orange,line width=0.6pt] (current page.north west)+(2.1in,-1.125in) -- ($(-1.5cm,-1.125in)+(current page.north east)$);
+    \end{tikzpicture}}
+    \pagenumbering{gobble}
+}
+% cv
+\fancypagestyle{CV}{
+    \fancyhead{}
+    \pagenumbering{arabic}
+	\newgeometry{margin=2cm,top=5cm,headheight=3.2cm,footskip=1cm}
+	\fancyhead[L]{\textbf{\huge{\textcolor{Burnt Orange}{Stanley Ipkiss}}{\Large,\hspace{1ex}Ph.D.}}\\[3pt]
+        Research Scientist at the University of Texas at Austin \\
+        Awesome Department, ECJ 7.123 \\
+        Austin, TX 78712 \\[3pt]
+        \includegraphics[width=1ex]{figures/icon_mobile_phone.png} 512-123-4567 \textcolor{Burnt Orange}{~|~}
+        \includegraphics[width=1em]{figures/icon_email.jpg} \href{mailto:stanley.ipkiss@fake.utexas.edu}{stanley.ipkiss@fake.utexas.edu} \textcolor{Burnt Orange}{~|~}
+        Orcid: \href{http://orcid.org/0123-4567-89AB-CDEF}{0123-4567-89AB-CDEF}
+        \vspace{-3mm}
+    }
+	\lfoot{\textcolor{footercolor}{Curriculum Vitae}}
+	\cfoot{\makebox[\textwidth][c]{\textcolor{footercolor}{Stanley Ipkiss}}}
+	\rfoot{\makebox[\textwidth][r]{\textcolor{footercolor}{\thepage}}}
+}
+% referee list
+\fancypagestyle{RL}{
+    \fancyhead{}
+	\newgeometry{margin=2cm,top=5cm,headheight=3.2cm,footskip=1cm}
+	\fancyhead[L]{\textbf{\huge{\textcolor{Burnt Orange}{Stanley Ipkiss}}{\Large,\hspace{1ex}Ph.D.}}\\[3pt]
+        Research Scientist at the University of Texas at Austin \\
+        Awesome Department, ECJ 7.123 \\
+        Austin, TX 78712 \\[3pt]
+        \includegraphics[width=1ex]{figures/icon_mobile_phone.png} 512-123-4567 \textcolor{Burnt Orange}{~|~}
+        \includegraphics[width=1em]{figures/icon_email.jpg} \href{mailto:stanley.ipkiss@fake.utexas.edu}{stanley.ipkiss@fake.utexas.edu} \textcolor{Burnt Orange}{~|~}
+        Orcid: \href{http://orcid.org/0123-4567-89AB-CDEF}{0123-4567-89AB-CDEF}
+        \vspace{-3mm}
+    }
+	\lfoot{\textcolor{footercolor}{References}}
+	\cfoot{\makebox[\textwidth][c]{\textcolor{footercolor}{Stanley Ipkiss}}}
+	\rfoot{\makebox[\textwidth][r]{\textcolor{footercolor}{\thepage}}}
+}
+% teaching statement
+\fancypagestyle{TS}{
+    \fancyhead{}
+	\newgeometry{margin=2cm,top=5cm,headheight=3.2cm,footskip=1cm}
+	\fancyhead[L]{\textbf{\huge{\textcolor{Burnt Orange}{Stanley Ipkiss}}{\Large,\hspace{1ex}Ph.D.}}\\[3pt]
+        Research Scientist at the University of Texas at Austin \\
+        Awesome Department, ECJ 7.123 \\
+        Austin, TX 78712 \\[3pt]
+        \includegraphics[width=1ex]{figures/icon_mobile_phone.png} 512-123-4567 \textcolor{Burnt Orange}{~|~}
+        \includegraphics[width=1em]{figures/icon_email.jpg} \href{mailto:stanley.ipkiss@fake.utexas.edu}{stanley.ipkiss@fake.utexas.edu} \textcolor{Burnt Orange}{~|~}
+        Orcid: \href{http://orcid.org/0123-4567-89AB-CDEF}{0123-4567-89AB-CDEF}
+        \vspace{-3mm}
+    }
+	\lfoot{\textcolor{footercolor}{Teaching statement}}
+	\cfoot{\makebox[\textwidth][c]{\textcolor{footercolor}{Stanley Ipkiss}}}
+	\rfoot{\makebox[\textwidth][r]{\textcolor{footercolor}{\thepage}}}
+}
+% research statement
+\fancypagestyle{RS}{
+    \fancyhead{}
+	\newgeometry{margin=2cm,top=5cm,headheight=3.2cm,footskip=1cm}
+	\fancyhead[L]{\textbf{\huge{\textcolor{Burnt Orange}{Stanley Ipkiss}}{\Large,\hspace{1ex}Ph.D.}}\\[3pt]
+        Research Scientist at the University of Texas at Austin \\
+        Awesome Department, ECJ 7.123 \\
+        Austin, TX 78712 \\[3pt]
+        \includegraphics[width=1ex]{figures/icon_mobile_phone.png} 512-123-4567 \textcolor{Burnt Orange}{~|~}
+        \includegraphics[width=1em]{figures/icon_email.jpg} \href{mailto:stanley.ipkiss@fake.utexas.edu}{stanley.ipkiss@fake.utexas.edu} \textcolor{Burnt Orange}{~|~}
+        Orcid: \href{http://orcid.org/0123-4567-89AB-CDEF}{0123-4567-89AB-CDEF}
+        \vspace{-3mm}
+    }
+	\lfoot{\textcolor{headercolor}{Research interests and future plans}}
+	\cfoot{\makebox[\textwidth][c]{\textcolor{footercolor}{Stanley Ipkiss}}}
+	\rfoot{\makebox[\textwidth][r]{\textcolor{footercolor}{\thepage}}}
+}
+
+\begin{document}
+	\include{coverletter}
+	\include{cv_edk}
+	\include{research_statement}
+	\include{teaching_statement}
+	\include{references_edk}
+\end{document}
